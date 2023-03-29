@@ -5,47 +5,39 @@ class Program
 {
     static void Main(string[] args)
     {
-        Dispose();
+        string path = @"C:\Users\mrvov\Desktop\folder";
+        long size = GetSize(path);
+        string[] folders = Directory.GetDirectories(path);
+        string[] files = Directory.GetFiles(path);
+        Console.WriteLine("Количество папок: {0}", folders.Length);
+        Console.WriteLine("Количество файлов: {0}", files.Length);
+        Console.WriteLine($"Размер в байтах, который занимает папка = {size} байтов");
     }
 
-    static void Dispose()
+    static long GetSize(string path)
     {
-        TimeSpan TimeSold = TimeSpan.FromMinutes(30);
-        string path = (@"C:\Users\mrvov\Desktop\folder");
+        long size = 0;
+
         if(Directory.Exists(path))
         {
             foreach(string file in Directory.GetFiles(path))
             {
                 FileInfo fileinfo = new FileInfo(file);
-                TimeSpan Ts = DateTime.Now - fileinfo.LastAccessTime;
-
-                if(Ts > TimeSold)
-                {
-                    File.Delete(file);
-                    Console.WriteLine("Был удалён файл: " + fileinfo.Name);
-                }
+                size += fileinfo.Length;
             }
 
             foreach(string folder in Directory.GetDirectories(path))
             {
                 DirectoryInfo dir = new DirectoryInfo(folder);
-                TimeSpan Ts = DateTime.Now - dir.LastAccessTime;
-
-                if(Ts > TimeSold)
-                {
-                    Directory.Delete(dir.FullName,true);
-                    Console.WriteLine("Была удалена папка: " + dir.Name);
-                }
+                size += GetSize(folder);
             }
 
- 
         }
         else
         {
-            Console.WriteLine("Папка не найдена!");
+            Console.WriteLine("Ошибка, проверьте путь до папки!");
         }
 
+        return size;
     }
 }
-
-//
